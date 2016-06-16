@@ -12,10 +12,6 @@ public enum TokenType {
 	BOOLEAN(""),
 	NULL("NULL"),
 	NUMBER("NUMBER"),
-	
-//	OBJ_KEY("OBJ_KEY"),
-//	OBJ_VALUE("OBJ_VALUE");
-//	OBJECT_MAP("OBJECT_MAP"),
 	OBJECT("OBJECT");
 	
 	String value;

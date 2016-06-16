@@ -5,52 +5,17 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 
-//assume
-/*
-
-'{
-	"debug" : "on",
-	"window" : {
-		"title" : "sample",
-		"size" : 500
-	}
-}'
-
-{
-	   "firstName": "John", "lastName": "Smith", "age": 25,
-	   "phoneNumber": [
-	       { "type": "home", "number": "212 555-1234" },
-	       { "type": "fax", "number": "646 555-4567" }
-	       ]
-}
-*/
-
 public class JsonParser {
 	public static Object parse(String json) throws JsonParserException {
 		
-		String a = "{\"debug\" : \"on\",\r\n\"window\" : {\r\n\t\"title\" : \"sample\",\r\n\t\"size\" : 500\r\n\t}\r\n}";
-		
 		Deque<TokenObject> stack = new LinkedList<TokenObject>();
-		
-		/**
-		 * public enum TokenType {
-	QUOTE("\""),
-	LEFT_MAP("{"),
-	RIGHT_MAP("}"),
-	LEFT_LIST("["),
-	RIGHT_LIST("]"),
-	COMMA(","),
-	COLON(":"),
-	STRING(""),
-	BOOLEAN(""),
-	NULL("NULL"),
-	DOUBLE("DOUBLE"),
-	
-		 */
-		int n = 0;
 		TokenReader reader = new TokenReader(json);
 		while (reader.hasNext()) {
 			TokenObject nextObj = reader.nextToken();
+			if(nextObj == null) {
+				System.err.println("nextObj is nulllllllllllllll");
+				break;
+			}
 			
 			switch(nextObj.getType()) {
 			case LEFT_MAP:
@@ -87,7 +52,6 @@ public class JsonParser {
 				stack.push(nextObj);
 				break;
 			case COMMA:
-				n++;
 				if (stack.peek().getType() == TokenType.OBJECT) {
 					Object valueObj = stack.pop().getToken();
 					
@@ -108,7 +72,7 @@ public class JsonParser {
 				break;
 			case RIGHT_LIST:
 				if (stack.peek().getType() == TokenType.LEFT_LIST) {
-					stack.offer(new TokenObject(TokenType.OBJECT, stack.pop().getToken()));
+					stack.push(new TokenObject(TokenType.OBJECT, stack.pop().getToken()));
 				}
 				break;
 			case RIGHT_MAP:
@@ -120,23 +84,19 @@ public class JsonParser {
 					map.put(keyObj, valueObj);
 					
 					TokenObject obj = new TokenObject(TokenType.OBJECT, stack.pop().getToken());
-//					if (!stack.isEmpty() && stack.peek().getType() == TokenType.LEFT_LIST) {
-//						((ArrayList<Object>)stack.peek().getToken()).add(obj.getToken());
-//					} else 
-//					{
+					
+					if (stack.isEmpty() || stack.peek().getType() == TokenType.COLON) {
 						stack.push(obj);
-//					}
+					} else if (stack.peek().getType() == TokenType.LEFT_LIST) {
+						((ArrayList<Object>)stack.peek().getToken()).add(obj.getToken());
+					} else {
+						throw new JsonParserException("RIGHT_MAP");
+					}
 				}
 				break;
 				
 			}
-			
-			
 		}
-		
-//		System.out.println(a);
-
-	
 		return stack.peek().getToken();
 	}
 	
@@ -146,5 +106,33 @@ public class JsonParser {
 		System.out.println(a);
 		Object result = JsonParser.parse(a);
 		System.out.println(result.toString());
+		
+		String b = "{\r\n" +
+			   "\"firstName\": \"John\", \"lastName\": \"Smith\", \"age\": 25,\r\n" +
+			   "\"phoneNumber\": [\r\n" +
+			       "{ \"type\": \"home\", \"number\": \"212 555-1234\" },\r\n"+
+			       "{ \"type\": \"fax\", \"number\": \"646 555-4567\" }\r\n" +
+			       "]\r\n"+
+		"}";
+		System.out.println(b);
+		result = JsonParser.parse(b);
+		System.out.println(result.toString());
+		
+		
+        String[] tests = {
+                "{\"TEST\":true,\" num \":1,\"B\":false,\"--float--\":2.5,\"null\":null,\"\":\"END\"}",
+                "{ \"TEST\": true,\" num \": 1, \"B\" : false ,\"--float--\"\t: 2.5 , \"null\"  : null, \"\":\t \t\"END\" }",
+                " { \"TEST\": \ntrue, \" num \"\r:\n1,\t\"B\"\n:false , \"--float--\": 2.5 ,\n\"null\"\n:null, \"\"\r:\"END\" } ",
+                "\n{\n  \"TEST\": true,\t\" num \":\t 1,\"B\"\n:\n false ,\n\n\"--float--\"\n:\n2.5 ,\"null\"\n:\nnull, \"\"\n:\n\"END\"\r}\n\t",
+                "\r{\t\"TEST\":\n \n \r true,    \n\" num \":1,  \"B\":  false \n, \"--float--\"\r \r:\r2.5 ,\t\"null\" :null ,\n\"\": \"END\"\n }\t"
+        };
+        int i = 0;
+        for (String t : tests) {
+        	
+        	System.out.println(t);
+        	result = JsonParser.parse(t);
+        	System.out.println(result.toString());
+        }
 	}
+	
 }
