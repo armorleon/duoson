@@ -97,6 +97,10 @@ public class JsonParser {
 				
 			}
 		}
+		
+		if(stack.size() != 1 || stack.peek().getType() != TokenType.OBJECT) {
+			throw new JsonParserException("NOT GOOD JSON");
+		}
 		return stack.peek().getToken();
 	}
 	
@@ -118,7 +122,11 @@ public class JsonParser {
 		result = JsonParser.parse(b);
 		System.out.println(result.toString());
 		
-		
+		String c = "{\r\n\"a\" : []}";
+		System.out.println(c);
+		result = JsonParser.parse(c);
+		System.out.println(result.toString());
+			
         String[] tests = {
                 "{\"TEST\":true,\" num \":1,\"B\":false,\"--float--\":2.5,\"null\":null,\"\":\"END\"}",
                 "{ \"TEST\": true,\" num \": 1, \"B\" : false ,\"--float--\"\t: 2.5 , \"null\"  : null, \"\":\t \t\"END\" }",
