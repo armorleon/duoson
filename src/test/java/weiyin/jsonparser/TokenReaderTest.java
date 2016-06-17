@@ -6,6 +6,12 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * TokenReader test class
+ * 
+ * @author Wei Yin
+ *
+ */
 public class TokenReaderTest {
 	
 	@Before
