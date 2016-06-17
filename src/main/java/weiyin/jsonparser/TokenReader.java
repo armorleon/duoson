@@ -3,39 +3,88 @@ package weiyin.jsonparser;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * The reader class to read the input json string and return next token for each calling.
+ * 
+ * @author Wei Yin
+ *
+ */
 public class TokenReader {
 	
+	/**
+	 * The cursor which points to the current token.
+	 */
 	private int cursor = 0;
+	
+	/**
+	 * The buffer memory to hold the whole json string
+	 */
 	private char[] buffer;
-	private int loadSize = 0;
 	
-	public TokenReader(String input) {
+	/**
+	 * The loaded input String size
+	 */
+	private int loadStringSize = 0;
+	
+	/**
+	 * The previous token recognized
+	 */
+	private TokenObject prevToken = null;
+	
+	/**
+	 * Constructor method to take input Json string
+	 * @param input
+	 * @throws JsonParserException
+	 */
+	public TokenReader(String input) throws JsonParserException {
+		if (input == null) {
+			throw new JsonParserException("The input string is null");
+		}
 		this.buffer = input.toCharArray();
-		this.loadSize = input.length();
-		cursor = 0;
+		this.loadStringSize = input.length();
+		this.cursor = 0;
 	}
 	
+	/**
+	 * Check whether reach the end of the input string
+	 *  
+	 * @return
+	 */
 	public boolean hasNext() {
-		return cursor < loadSize;
+		return cursor < loadStringSize;
 	}
 	
+	/**
+	 * The method to check whether is white space
+	 * 
+	 * @param a
+	 * @return
+	 */
 	public boolean isWhiteSpace(char a) {
 		return a == '\r' || a == '\n' || a == '\t' || a == ' '; 
 	}
 
+	/**
+	 * The method to check whether it's a key token
+	 * @param a
+	 * @return
+	 */
 	public boolean isKeyToken(char a) {
 		return a == '\"' || a == '[' || a == ']' || a == '{' || a == '}' || a == ':' || a == ','; 
 	}
-	
-	private TokenObject prevToken = null;
-	
+
+	/**
+	 * Method to get the next token
+	 * 
+	 * @return
+	 */
 	public TokenObject nextToken() {
-		if (cursor >= loadSize) {
+		if (cursor >= loadStringSize) {
 			return null;
 		}
 		
 		TokenObject nextObject = null;	
-		while (cursor < loadSize) {
+		while (cursor < loadStringSize) {
 			char c = buffer[cursor];
 			switch(c) {
 			case '\r':
@@ -75,7 +124,7 @@ public class TokenReader {
 			default:
 				int start = cursor;
 				int end = cursor;
-				while (end < loadSize) {
+				while (end < loadStringSize) {
 					if (isKeyToken(buffer[end]) || (prevToken.getType() != TokenType.QUOTE && isWhiteSpace(buffer[end]))) {
 						break;
 					}
@@ -109,11 +158,6 @@ public class TokenReader {
 	}
 	
 	public static void main(String[] args) {
-		String b = "[   {\t}  ,  [ \r\n{  }   , {}]";
-		String a = "{\"debug\" : \"on\",\r\n\"window\" : {\r\n\t\"title\" : \"sample\",  \r\n \"flag\"   :    true,   \"value\" :    30,  \r\n\t\"size\" : \"500\t\t300\"\r\n\t}, \"desk\":  23.07\r\t\t\n}";
-		TokenReader tr = new TokenReader(a);
-		while (tr.hasNext()) {
-			System.out.println(tr.nextToken());
-		}
+
 	}
 }

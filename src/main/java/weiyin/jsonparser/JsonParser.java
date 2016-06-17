@@ -122,7 +122,7 @@ public class JsonParser {
 		}
 		
 		if(stack.size() != 1 || stack.peek().getType() != TokenType.OBJECT) {
-			throw new JsonParserException("NOT GOOD JSON");
+			throw new JsonParserException("ERROR JSON FORMAT");
 		}
 		return stack.peek().getToken();
 	}

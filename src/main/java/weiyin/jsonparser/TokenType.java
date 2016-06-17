@@ -1,6 +1,13 @@
 package weiyin.jsonparser;
 
+/**
+ * The enum class to hold all token types
+ * 
+ * @author Wei Yin
+ *
+ */
 public enum TokenType {
+	
 	QUOTE("\""),
 	LEFT_MAP("{"),
 	RIGHT_MAP("}"),
@@ -12,14 +19,25 @@ public enum TokenType {
 	BOOLEAN(""),
 	NULL("NULL"),
 	NUMBER("NUMBER"),
-	OBJECT("OBJECT");
+	OBJECT("OBJECT");	//OBJECT is a virtual token
 	
-	String value;
+	private String value;
+	
+	/**
+	 * Enum constructor
+	 * 
+	 * @param value
+	 */
 	TokenType(String value) {
 		this.value = value;
 	}
 	
-	String getValue() {
+	/**
+	 * Getter method
+	 * 
+	 * @return
+	 */
+	public String getValue() {
 		return this.value;
 	}
 }
