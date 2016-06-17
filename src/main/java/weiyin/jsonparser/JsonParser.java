@@ -129,6 +129,7 @@ public class JsonParser {
 	
 	
 	public static void main(String[] args) throws JsonParserException {
+		
 		String a = "{\"debug\" : \"on\",\r\n\"window\" : {\r\n\t\"title\" : \"sample\",  \r\n \"flag\"   :    true,   \"value\" :    30,  \r\n\t\"size\" : \"500    300\"\r\n\t}, \"desk\":  23.07\r\t\t\n ,\"list\":[{\"list1\": \"120\"},{\"list2\":null}]\r\n}";
 		System.out.println(a);
 		Object result = JsonParser.parse(a);
@@ -164,6 +165,8 @@ public class JsonParser {
         	result = JsonParser.parse(t);
         	System.out.println(result.toString());
         }
+        
+
 	}
 	
 }

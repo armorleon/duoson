@@ -83,7 +83,9 @@ public class TokenReader {
 			return null;
 		}
 		
-		TokenObject nextObject = null;	
+		TokenObject nextObject = null;
+		
+		//loop through all token types
 		while (cursor < loadStringSize) {
 			char c = buffer[cursor];
 			switch(c) {
@@ -121,11 +123,15 @@ public class TokenReader {
 				nextObject = new TokenObject(TokenType.COMMA, null);
 				cursor++;
 				break;
+				
+			//parse complex string 
 			default:
 				int start = cursor;
 				int end = cursor;
 				while (end < loadStringSize) {
-					if (isKeyToken(buffer[end]) || (prevToken.getType() != TokenType.QUOTE && isWhiteSpace(buffer[end]))) {
+					//if "reach next key token" or "reach white space and his white space is not within quota"
+					if (isKeyToken(buffer[end]) || 
+							(prevToken.getType() != TokenType.QUOTE && isWhiteSpace(buffer[end]))) {
 						break;
 					}
 					end++;
@@ -156,8 +162,5 @@ public class TokenReader {
 		
 		return nextObject;
 	}
-	
-	public static void main(String[] args) {
 
-	}
 }
