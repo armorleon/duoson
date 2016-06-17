@@ -145,7 +145,11 @@ public class TokenReader {
 					} else if (strObj.equalsIgnoreCase("true") || strObj.equalsIgnoreCase("false")) {
 						nextObject = new TokenObject(TokenType.BOOLEAN, Boolean.parseBoolean(strObj));
 					} else {
-						nextObject = new TokenObject(TokenType.NUMBER, Double.parseDouble(strObj));
+						if (strObj.contains(".")) {
+							nextObject = new TokenObject(TokenType.NUMBER, Double.parseDouble(strObj));
+						} else {
+							nextObject = new TokenObject(TokenType.NUMBER, Integer.parseInt(strObj));
+						}
 					}
 				} else {
 					nextObject = new TokenObject(TokenType.STRING, strObj);

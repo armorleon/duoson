@@ -2,6 +2,10 @@ package weiyin.jsonparser;
 
 import static org.junit.Assert.fail;
 
+import java.util.Map;
+
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 /**
@@ -12,15 +16,17 @@ import org.junit.Test;
  */
 public class JsonParserTest {
 
-	private void testJson(String input) {
+	private Object testJson(String input) {
 		System.out.println("INPUT_STRING:================================\n" + input);
+		Object result = null;
 		try {
-			Object result = JsonParser.parse(input);
+			result = JsonParser.parse(input);
 			System.out.println("OUTPUT_OBJECT:================================\n" + result.toString() + "\n\n");
 		} catch (JsonParserException e) {
 			e.printStackTrace();
 			fail();
 		}
+		return result;
 	}
 	
 	@Test
@@ -67,5 +73,20 @@ public class JsonParserTest {
 		String input = "{";
 		System.out.println("INPUT_STRING:================================\n" + input);
 		Object result = JsonParser.parse(input);
+	}
+	
+	@Test
+	public void testExample1() {
+		String input = "{\"debug\": \"on\" ," +
+							"\"window\": {" +
+								"\"title\":\"sample\", " +
+								"\"size\" :  500" +
+							"}" +
+						"}";		
+		Map<String, Object> result = (Map<String, Object>) testJson(input);
+		Assert.assertEquals("on", result.get("debug"));
+		Map<String, Object> window = (Map<String, Object>) result.get("window");
+		Assert.assertEquals("sample", window.get("title"));
+		Assert.assertEquals(500, window.get("size"));
 	}
 }
