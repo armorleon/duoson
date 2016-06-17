@@ -1,4 +1,4 @@
-package weiyin.duoson;
+package weiyin.jsonparser;
 
 public class TokenObject {
 	private TokenType type;

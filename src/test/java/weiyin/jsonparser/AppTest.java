@@ -1,4 +1,4 @@
-package weiyin.duoson;
+package weiyin.jsonparser;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

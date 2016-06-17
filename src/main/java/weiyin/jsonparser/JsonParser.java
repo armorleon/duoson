@@ -1,4 +1,4 @@
-package weiyin.duoson;
+package weiyin.jsonparser;
 
 import java.util.ArrayList;
 import java.util.Deque;
@@ -6,6 +6,32 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class JsonParser {
+	/**
+	 * 	QUOTE("\""),
+	LEFT_MAP("{"),
+	RIGHT_MAP("}"),
+	LEFT_LIST("["),
+	RIGHT_LIST("]"),
+	COMMA(","),
+	COLON(":"),
+	STRING(""),
+	BOOLEAN(""),
+	NULL("NULL"),
+	NUMBER("NUMBER"),
+	OBJECT("OBJECT");
+	 */
+//	private static char[][] allowedPairs = {
+//		{'{', '}', '[', '\"'},
+//		{'}', ',', '}', ']'},
+//		{'[', ']', '{'},
+//		{']', ',', '}'},
+//		{',', '{'},
+//		{'\"', '\"',  TokenType.COMMA, TokenType.STRING, '}', ':'},
+//		{
+//		
+//	}
+	
+	
 	public static Object parse(String json) throws JsonParserException {
 		
 		Deque<TokenObject> stack = new LinkedList<TokenObject>();
@@ -16,8 +42,7 @@ public class JsonParser {
 				System.err.println("nextObj is nulllllllllllllll");
 				break;
 			}
-			
-			switch(nextObj.getType()) {
+			switch (nextObj.getType()) {
 			case LEFT_MAP:
 				stack.push(nextObj);
 				break;
@@ -33,13 +58,11 @@ public class JsonParser {
 					stack.push(nextObj);
 				}
 				break;
-				
 			case STRING:		
 				if (stack.peek().getType() == TokenType.QUOTE) {
 					stack.peek().setToken(nextObj.getToken());
 					break;
 				}
-				
 				break;
 			case BOOLEAN:
 			case NULL:

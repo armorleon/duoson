@@ -1,4 +1,4 @@
-package weiyin.duoson;
+package weiyin.jsonparser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
