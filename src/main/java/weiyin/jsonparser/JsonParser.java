@@ -33,21 +33,24 @@ public class JsonParser {
 					if (obj == null) {
 						obj = new String("");
 					}
+					//pop left QUOTE
 					stack.pop();
+					//and create a virtual token OBJECT for the whole string between two QUOTEs
 					stack.push(new TokenObject(TokenType.OBJECT, obj));
 				} else {
 					stack.push(nextObj);
 				}
 				break;
-			case STRING:		
+			case STRING:
+				//if the top is already QUOTE, just set the top's token with the current String
 				if (stack.peek().getType() == TokenType.QUOTE) {
 					stack.peek().setToken(nextObj.getToken());
-					break;
 				}
 				break;
 			case BOOLEAN:
 			case NULL:
 			case NUMBER:
+				//if the top is COLON, convert the BOOLEAN, NULL, NUMBER to OBJECT
 				if (stack.peek().getType() == TokenType.COLON) {
 					stack.push(new TokenObject(TokenType.OBJECT, nextObj.getToken()));
 				}
@@ -56,17 +59,26 @@ public class JsonParser {
 				stack.push(nextObj);
 				break;
 			case COMMA:
+				//COMMA means time to add to map or to list
 				if (stack.peek().getType() == TokenType.OBJECT) {
+					//pop value token
 					Object valueObj = stack.pop().getToken();
 					
+					//pop could be COLON or LEFT_LIST
 					TokenObject top = stack.pop();
-					if (top.getType() == TokenType.COLON) {// colon
+					
+					//for COLON case, pop the key token and put the key-value pair into the map
+					if (top.getType() == TokenType.COLON) {
 						String keyObj = (String)stack.pop().getToken();
 						Map<String, Object> map = (Map<String, Object>) stack.peek().getToken();
 						map.put(keyObj, valueObj);
-					} else if (top.getType() == TokenType.LEFT_LIST) {
+					} 
+					//for LEFT_LIST case, add the value token into the lsit
+					else if (top.getType() == TokenType.LEFT_LIST) {
 						((ArrayList<Object>)top.getToken()).add(valueObj);
-					} else {
+					} 
+					//error case
+					else {
 						throw new JsonParserException("COMMA");
 					}
 				}
@@ -76,24 +88,40 @@ public class JsonParser {
 				break;
 			case RIGHT_LIST:
 				if (stack.peek().getType() == TokenType.LEFT_LIST) {
+					//pop LEFT_LIFT and create a virtual token OBJECT for the whole string between LEFT_LIST and RIGHT_LIST
 					stack.push(new TokenObject(TokenType.OBJECT, stack.pop().getToken()));
 				}
 				break;
 			case RIGHT_MAP:
 				if (stack.peek().getType() == TokenType.OBJECT) {
+					
+					//pop value token
 					Object valueObj = stack.pop().getToken();
-					stack.pop();// colon
+					
+					//pop colon
+					stack.pop();
+					
+					//pop key token
 					String keyObj = (String)stack.pop().getToken();
+					
+					//Th top of the stack is LEFT_MAP now, so fill map
 					Map<String, Object> map = (Map<String, Object>) stack.peek().getToken();
 					map.put(keyObj, valueObj);
 					
+					//pop LEFT_MAP and create a virtual token OBJECT using the map
 					TokenObject obj = new TokenObject(TokenType.OBJECT, stack.pop().getToken());
 					
+					//top stack could be colon or LEFT_LIST
+					//for COLON, put the OBJECT into the stack
 					if (stack.isEmpty() || stack.peek().getType() == TokenType.COLON) {
 						stack.push(obj);
-					} else if (stack.peek().getType() == TokenType.LEFT_LIST) {
+					} 
+					//for LEFT_LIST, add the value token to the list
+					else if (stack.peek().getType() == TokenType.LEFT_LIST) {
 						((ArrayList<Object>)stack.peek().getToken()).add(obj.getToken());
-					} else {
+					} 
+					//error case
+					else {
 						throw new JsonParserException("RIGHT_MAP");
 					}
 				}
@@ -102,9 +130,13 @@ public class JsonParser {
 			}
 		}
 		
+		//ideally, if the json string format is correct,
+		//the stack should only contains one element which is OBJECT 
 		if(stack.size() != 1 || stack.peek().getType() != TokenType.OBJECT) {
 			throw new JsonParserException("ERROR JSON FORMAT");
 		}
+		
+		//top's token is the real object we need to return
 		return stack.peek().getToken();
 	}
 	
