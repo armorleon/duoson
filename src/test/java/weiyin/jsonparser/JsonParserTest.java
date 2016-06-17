@@ -12,28 +12,7 @@ import org.junit.Test;
  */
 public class JsonParserTest {
 
-	@Test
-	public void testGoodJson1() {
-		String input = "{\"debug\" : \"on\",\r\n\"window\" : {\r\n\t\"title\" : \"sample\",  \r\n \"flag\"   :    true,   \"value\" :    30,  \r\n\t\"size\" : \"500    300\"\r\n\t}, \"desk\":  23.07\r\t\t\n ,\"list\":[{\"list1\": \"120\"},{\"list2\":null}]\r\n}";
-		System.out.println("INPUT_STRING:================================\n" + input);
-		try {
-			Object result = JsonParser.parse(input);
-			System.out.println("OUTPUT_OBJECT:================================\n" + result.toString() + "\n\n");
-		} catch (JsonParserException e) {
-			e.printStackTrace();
-			fail();
-		}
-	}
-
-	@Test
-	public void testGoodJson2() {
-		String input = "{\r\n" +
-				   "\"firstName\": \"John\", \"lastName\": \"Smith\", \"age\": 25,\r\n" +
-				   "\"phoneNumber\": [\r\n" +
-				       "{ \"type\": \"home\", \"number\": \"212 555-1234\" },\r\n"+
-				       "{ \"type\": \"fax\", \"number\": \"646 555-4567\" }\r\n" +
-				       "]\r\n"+
-			"}";
+	private void testJson(String input) {
 		System.out.println("INPUT_STRING:================================\n" + input);
 		try {
 			Object result = JsonParser.parse(input);
@@ -45,16 +24,27 @@ public class JsonParserTest {
 	}
 	
 	@Test
+	public void testGoodJson1() {
+		String input = "{\"debug\" : \"on\",\r\n\"window\" : {\r\n\t\"title\" : \"sample\",  \r\n \"flag\"   :    true,   \"value\" :    30,  \r\n\t\"size\" : \"500    300\"\r\n\t}, \"desk\":  23.07\r\t\t\n ,\"list\":[{\"list1\": \"120\"},{\"list2\":null}]\r\n}";
+		testJson(input);
+	}
+
+	@Test
+	public void testGoodJson2() {
+		String input = "{\r\n" +
+				   "\"firstName\": \"John\", \"lastName\": \"Smith\", \"age\": 25,\r\n" +
+				   "\"phoneNumber\": [\r\n" +
+				       "{ \"type\": \"home\", \"number\": \"212 555-1234\" },\r\n"+
+				       "{ \"type\": \"fax\", \"number\": \"646 555-4567\" }\r\n" +
+				       "]\r\n"+
+			"}";
+		testJson(input);
+	}
+	
+	@Test
 	public void testGoodJson3() {
 		String input = "{\r\n\"a\" : []}";
-		System.out.println("INPUT_STRING:================================\n" + input);
-		try {
-			Object result = JsonParser.parse(input);
-			System.out.println("OUTPUT_OBJECT:================================\n" + result.toString() + "\n\n");
-		} catch (JsonParserException e) {
-			e.printStackTrace();
-			fail();
-		}
+		testJson(input);
 	}
 	
 	@Test
@@ -67,17 +57,10 @@ public class JsonParserTest {
                 "\r{\t\"TEST\":\n \n \r true,    \n\" num \":1,  \"B\":  false \n, \"--float--\"\r \r:\r2.5 ,\t\"null\" :null ,\n\"\": \"END\"\n }\t"
         };
         for (String input : inputs) {
-        	System.out.println("INPUT_STRING:================================\n" + input);
-			try {
-				Object result = JsonParser.parse(input);
-				System.out.println("OUTPUT_OBJECT:================================\n" + result.toString() + "\n\n");
-			} catch (JsonParserException e) {
-				e.printStackTrace();
-				fail();
-			}
-        	
+        	testJson(input);
         }
 	}
+	
 	
 	@Test (expected = JsonParserException.class)
 	public void testBadJson1() throws JsonParserException {
