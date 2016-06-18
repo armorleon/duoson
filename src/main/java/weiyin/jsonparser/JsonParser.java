@@ -20,7 +20,7 @@ public class JsonParser {
 		while (reader.hasNext()) {
 			TokenObject nextObj = reader.nextToken();
 			if(nextObj == null) {
-				System.err.println("nextObj is nulllllllllllllll");
+				System.err.println("There are no token any more, but there are extra characters behind the last token, ignore those characters");
 				break;
 			}
 			switch (nextObj.getType()) {
