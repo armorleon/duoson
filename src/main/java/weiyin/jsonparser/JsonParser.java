@@ -93,7 +93,8 @@ public class JsonParser {
 
 	/**
 	 * When nextToken is COMMA and stack top is OBJECT
-	 * 1. pop up valueObj and COLON or LEFT_LIST
+	 * 1. pop up valueObj and COLON
+	 * 2. for COLON, pop up keyObj, insert into the map 
 	 * 
 	 * @param stack
 	 * @throws JsonParserException
@@ -103,18 +104,14 @@ public class JsonParser {
 		//pop value token
 		Object valueObj = stack.pop().getToken();
 		
-		//pop could be COLON or LEFT_LIST
+		//pop could be COLON
 		TokenObject top = stack.pop();
 		
-		//for COLON case, pop the key token and put the key-value pair into the map
+		//for COLON case, pop the key token and put the key-value pair into the map, case  { OBJECT : OBJECT ,
 		if (top.getType() == TokenType.COLON) {
 			String keyObj = (String)stack.pop().getToken();
 			Map<String, Object> map = (Map<String, Object>) stack.peek().getToken();
 			map.put(keyObj, valueObj);
-		} 
-		//for LEFT_LIST case, add the value token into the lsit
-		else if (top.getType() == TokenType.LEFT_LIST) {
-			((ArrayList<Object>)top.getToken()).add(valueObj);
 		} 
 		//error case
 		else {
@@ -122,6 +119,15 @@ public class JsonParser {
 		}
 	}
 
+	/**
+	 * 1. pop three times to get valueObj, colon and keyObj
+	 * 2. convert {OBJECT : OBJECT}  to new OBJECT
+	 * 3. check the top of the stack, if colon, push new OBJECT
+	 *    if LEFT_LIST, add new OBJECT to the list 
+	 * 
+	 * @param stack
+	 * @throws JsonParserException
+	 */
 	private static void handleRightMapWithObject(Deque<TokenObject> stack)
 			throws JsonParserException {
 		//pop value token
@@ -133,19 +139,19 @@ public class JsonParser {
 		//pop key token
 		String keyObj = (String)stack.pop().getToken();
 		
-		//Th top of the stack is LEFT_MAP now, so fill map
+		//The top of the stack is LEFT_MAP now, so fill map, case  { OBJECT : OBJECT }
 		Map<String, Object> map = (Map<String, Object>) stack.peek().getToken();
 		map.put(keyObj, valueObj);
 		
-		//pop LEFT_MAP and create a virtual token OBJECT using the map
+		//pop LEFT_MAP and create a virtual token OBJECT using the map,  convert  {OBJECT : OBJECT}  to  OBJECT
 		TokenObject obj = new TokenObject(TokenType.OBJECT, stack.pop().getToken());
 		
 		//top stack could be colon or LEFT_LIST
-		//for COLON, put the OBJECT into the stack
+		//for COLON, put the OBJECT into the stack, case { OBJECT : {OBJECT : OBJECT}
 		if (stack.isEmpty() || stack.peek().getType() == TokenType.COLON) {
 			stack.push(obj);
 		} 
-		//for LEFT_LIST, add the value token to the list
+		//for LEFT_LIST, add the value token to the list, case  [ {OBJECT : OBJECT}
 		else if (stack.peek().getType() == TokenType.LEFT_LIST) {
 			((ArrayList<Object>)stack.peek().getToken()).add(obj.getToken());
 		} 
