@@ -30,6 +30,7 @@ public class JsonParser {
 			case QUOTE:
 				if (stack.peek().getType() == TokenType.QUOTE) {
 					Object obj = stack.peek().getToken();
+					//null means there is no String between two QUOTE, so assign "" to it
 					if (obj == null) {
 						obj = new String("");
 					}
@@ -38,6 +39,7 @@ public class JsonParser {
 					//and create a virtual token OBJECT for the whole string between two QUOTEs
 					stack.push(new TokenObject(TokenType.OBJECT, obj));
 				} else {
+					//left QUOTE object's token is null
 					stack.push(nextObj);
 				}
 				break;
