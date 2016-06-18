@@ -126,34 +126,7 @@ public class TokenReader {
 				
 			//parse complex string 
 			default:
-				int start = cursor;
-				int end = cursor;
-				while (end < loadStringSize) {
-					//if "reach next key token" or "reach white space and his white space is not within quota"
-					if (isKeyToken(buffer[end]) || 
-							(prevToken.getType() != TokenType.QUOTE && isWhiteSpace(buffer[end]))) {
-						break;
-					}
-					end++;
-				}
-				cursor = end;
-				
-				String strObj = new String(buffer, start, end - start);
-				if (prevToken.getType() != TokenType.QUOTE) {
-					if (strObj.equalsIgnoreCase("null")) {
-						nextObject = new TokenObject(TokenType.NULL, null);
-					} else if (strObj.equalsIgnoreCase("true") || strObj.equalsIgnoreCase("false")) {
-						nextObject = new TokenObject(TokenType.BOOLEAN, Boolean.parseBoolean(strObj));
-					} else {
-						if (strObj.contains(".")) {
-							nextObject = new TokenObject(TokenType.NUMBER, Double.parseDouble(strObj));
-						} else {
-							nextObject = new TokenObject(TokenType.NUMBER, Integer.parseInt(strObj));
-						}
-					}
-				} else {
-					nextObject = new TokenObject(TokenType.STRING, strObj);
-				}
+				nextObject = handleComplexString();
 				break;
 			}
 			
@@ -164,6 +137,44 @@ public class TokenReader {
 			
 		}
 		
+		return nextObject;
+	}
+
+	/**
+	 * handle complex string
+	 * 
+	 * @return
+	 */
+	private TokenObject handleComplexString() {
+		TokenObject nextObject;
+		int start = cursor;
+		int end = cursor;
+		while (end < loadStringSize) {
+			//if "reach next key token" or "reach white space and his white space is not within quota"
+			if (isKeyToken(buffer[end]) || 
+					(prevToken.getType() != TokenType.QUOTE && isWhiteSpace(buffer[end]))) {
+				break;
+			}
+			end++;
+		}
+		cursor = end;
+		
+		String strObj = new String(buffer, start, end - start);
+		if (prevToken.getType() != TokenType.QUOTE) {
+			if (strObj.equalsIgnoreCase("null")) {
+				nextObject = new TokenObject(TokenType.NULL, null);
+			} else if (strObj.equalsIgnoreCase("true") || strObj.equalsIgnoreCase("false")) {
+				nextObject = new TokenObject(TokenType.BOOLEAN, Boolean.parseBoolean(strObj));
+			} else {
+				if (strObj.contains(".")) {
+					nextObject = new TokenObject(TokenType.NUMBER, Double.parseDouble(strObj));
+				} else {
+					nextObject = new TokenObject(TokenType.NUMBER, Integer.parseInt(strObj));
+				}
+			}
+		} else {
+			nextObject = new TokenObject(TokenType.STRING, strObj);
+		}
 		return nextObject;
 	}
 
