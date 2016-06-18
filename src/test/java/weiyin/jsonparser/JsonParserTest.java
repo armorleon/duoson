@@ -2,6 +2,7 @@ package weiyin.jsonparser;
 
 import static org.junit.Assert.fail;
 
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
@@ -80,7 +81,11 @@ public class JsonParserTest {
 		String input = "{\"debug\": \"on\" ," +
 							"\"window\": {" +
 								"\"title\":\"sample\", " +
-								"\"size\" :  500" +
+								"\"size\" :  500 ," +
+								"\"nextWindow\" : [ "
+												+ "	{ \"title1  \": null  },"
+												+ " {\"title2\": 220.008}"
+												+ "]" +
 							"}" +
 						"}";		
 		Map<String, Object> result = (Map<String, Object>) testJson(input);
@@ -88,5 +93,8 @@ public class JsonParserTest {
 		Map<String, Object> window = (Map<String, Object>) result.get("window");
 		Assert.assertEquals("sample", window.get("title"));
 		Assert.assertEquals(500, window.get("size"));
+		List<Object> list = (List<Object>) window.get("nextWindow");
+		Map<String, Object> title2Map = (Map<String, Object>) list.get(1);
+		Assert.assertEquals(220.008, title2Map.get("title2"));
 	}
 }
