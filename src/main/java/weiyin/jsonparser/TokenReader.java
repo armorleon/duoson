@@ -22,9 +22,9 @@ public class TokenReader {
 	private char[] buffer;
 	
 	/**
-	 * The loaded input String size
+	 * The loaded input json string size
 	 */
-	private int loadStringSize = 0;
+	private int stringSize = 0;
 	
 	/**
 	 * The previous token recognized
@@ -33,44 +33,44 @@ public class TokenReader {
 	
 	/**
 	 * Constructor method to take input Json string
-	 * @param input
+	 * @param strJson the input json string
 	 * @throws JsonParserException
 	 */
-	public TokenReader(String input) throws JsonParserException {
-		if (input == null) {
+	public TokenReader(String strJson) throws JsonParserException {
+		if (strJson == null) {
 			throw new JsonParserException("The input string is null");
 		}
-		this.buffer = input.toCharArray();
-		this.loadStringSize = input.length();
+		this.buffer = strJson.toCharArray();
+		this.stringSize = strJson.length();
 		this.cursor = 0;
 	}
 	
 	/**
 	 * Check whether reach the end of the input string
 	 *  
-	 * @return
+	 * @return 
 	 */
 	public boolean hasNext() {
-		return cursor < loadStringSize;
+		return cursor < stringSize;
 	}
 	
 	/**
 	 * The method to check whether is white space
 	 * 
-	 * @param a
+	 * @param character
 	 * @return
 	 */
-	public boolean isWhiteSpace(char a) {
-		return a == '\r' || a == '\n' || a == '\t' || a == ' '; 
+	public boolean isWhiteSpace(char character) {
+		return character == '\r' || character == '\n' || character == '\t' || character == ' '; 
 	}
 
 	/**
 	 * The method to check whether it's a key token
-	 * @param a
+	 * @param character
 	 * @return
 	 */
-	public boolean isKeyToken(char a) {
-		return a == '\"' || a == '[' || a == ']' || a == '{' || a == '}' || a == ':' || a == ','; 
+	public boolean isKeyToken(char character) {
+		return character == '\"' || character == '[' || character == ']' || character == '{' || character == '}' || character == ':' || character == ','; 
 	}
 
 	/**
@@ -79,14 +79,14 @@ public class TokenReader {
 	 * @return
 	 */
 	public TokenObject nextToken() {
-		if (cursor >= loadStringSize) {
+		if (cursor >= stringSize) {
 			return null;
 		}
 		
 		TokenObject nextObject = null;
 		
 		//loop through all token types
-		while (cursor < loadStringSize) {
+		while (cursor < stringSize) {
 			char c = buffer[cursor];
 			switch(c) {
 			case '\r':
@@ -143,13 +143,13 @@ public class TokenReader {
 	/**
 	 * handle complex string
 	 * 
-	 * @return
+	 * @return TokenObject
 	 */
 	private TokenObject handleComplexString() {
 		TokenObject nextObject;
 		int start = cursor;
 		int end = cursor;
-		while (end < loadStringSize) {
+		while (end < stringSize) {
 			//if "reach next key token" or "reach white space and his white space is not within quota"
 			if (isKeyToken(buffer[end]) || 
 					(prevToken.getType() != TokenType.QUOTE && isWhiteSpace(buffer[end]))) {

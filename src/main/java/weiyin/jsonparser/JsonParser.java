@@ -6,17 +6,24 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * The parser class to handle json string
+ * The parser class to handle input json string
  * 
  * @author Wei Yin
  *
  */
 public class JsonParser {
 
-	public static Object parse(String json) throws JsonParserException {
+	/**
+	 * The core function to parse the input json string
+	 * 
+	 * @param strJson the input json string
+	 * @return the final output Object
+	 * @throws JsonParserException json format is not correct
+	 */
+	public static Object parse(String strJson) throws JsonParserException {
 		
 		Deque<TokenObject> stack = new LinkedList<TokenObject>();
-		TokenReader reader = new TokenReader(json);
+		TokenReader reader = new TokenReader(strJson);
 		while (reader.hasNext()) {
 			TokenObject nextObj = reader.nextToken();
 			if(nextObj == null) {
@@ -85,7 +92,7 @@ public class JsonParser {
 		
 		//ideally, if the json string format is correct,
 		//the stack should only contains one element which is OBJECT 
-		if(stack.size() != 1 || stack.peek().getType() != TokenType.OBJECT) {
+		if (stack.size() != 1 || stack.peek().getType() != TokenType.OBJECT) {
 			throw new JsonParserException("ERROR JSON FORMAT");
 		}
 		
@@ -95,11 +102,10 @@ public class JsonParser {
 
 	/**
 	 * When nextToken is COMMA and stack top is OBJECT
-	 * 1. pop up valueObj and COLON
-	 * 2. for COLON, pop up keyObj, insert into the map 
+	 * pop up valueObj and COLON, for COLON, pop up keyObj, insert into the map 
 	 * 
-	 * @param stack
-	 * @throws JsonParserException
+	 * @param stack	the stack to put all tokens
+	 * @throws JsonParserException json format is not correct
 	 */
 	private static void handleCommaWithObject(Deque<TokenObject> stack)
 			throws JsonParserException {
@@ -122,13 +128,14 @@ public class JsonParser {
 	}
 
 	/**
+	 * Handle RIGHT_MAP token
 	 * 1. pop three times to get valueObj, colon and keyObj
 	 * 2. convert {OBJECT : OBJECT}  to new OBJECT
 	 * 3. check the top of the stack, if colon, push new OBJECT
 	 *    if LEFT_LIST, add new OBJECT to the list 
 	 * 
-	 * @param stack
-	 * @throws JsonParserException
+	 * @param stack the stack to put all tokens
+	 * @throws JsonParserException json format is not correct
 	 */
 	private static void handleRightMapWithObject(Deque<TokenObject> stack)
 			throws JsonParserException {

@@ -9,16 +9,27 @@ package weiyin.jsonparser;
 public enum TokenType {
 	
 	QUOTE("\""),
+	
 	LEFT_MAP("{"),
+	
 	RIGHT_MAP("}"),
+	
 	LEFT_LIST("["),
+	
 	RIGHT_LIST("]"),
+	
 	COMMA(","),
+	
 	COLON(":"),
+	
 	STRING(""),
+	
 	BOOLEAN(""),
+	
 	NULL("NULL"),
+	
 	NUMBER("NUMBER"),
+	
 	OBJECT("OBJECT");	//OBJECT is a virtual token
 	
 	private String value;
