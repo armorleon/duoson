@@ -33,7 +33,10 @@ public class JsonParserTest {
 	@Test
 	public void testGoodJson1() {
 		String input = "{\"debug\" : \"on\",\r\n\"window\" : {\r\n\t\"title\" : \"sample\",  \r\n \"flag\"   :    true,   \"value\" :    30,  \r\n\t\"size\" : \"500    300\"\r\n\t}, \"desk\":  23.07\r\t\t\n ,\"list\":[{\"list1\": \"120\"},{\"list2\":null}]\r\n}";
-		testJson(input);
+		String expected = "{debug=on, desk=23.07, window={flag=true, size=500    300, title=sample, value=30}, list=[{list1=120}, {list2=null}]}"; 
+		Object result = testJson(input);
+		Assert.assertEquals(expected, result.toString());
+		
 	}
 
 	@Test
@@ -45,13 +48,18 @@ public class JsonParserTest {
 				       "{ \"type\": \"fax\", \"number\": \"646 555-4567\" }\r\n" +
 				       "]\r\n"+
 			"}";
-		testJson(input);
+		String expected = "{firstName=John, lastName=Smith, phoneNumber=[{number=212 555-1234, type=home}, {number=646 555-4567, type=fax}], age=25}";
+		Object result = testJson(input);
+		Assert.assertEquals(expected, result.toString());
 	}
 	
 	@Test
 	public void testGoodJson3() {
 		String input = "{\r\n\"a\" : []}";
-		testJson(input);
+		String expected = "{a=[]}";
+		Object result = testJson(input);
+		Assert.assertEquals(expected, result.toString());
+
 	}
 	
 	@Test
@@ -63,8 +71,13 @@ public class JsonParserTest {
                 "\n{\n  \"TEST\": true,\t\" num \":\t 1,\"B\"\n:\n false ,\n\n\"--float--\"\n:\n2.5 ,\"null\"\n:\nnull, \"\"\n:\n\"END\"\r}\n\t",
                 "\r{\t\"TEST\":\n \n \r true,    \n\" num \":1,  \"B\":  false \n, \"--float--\"\r \r:\r2.5 ,\t\"null\" :null ,\n\"\": \"END\"\n }\t"
         };
-        for (String input : inputs) {
-        	testJson(input);
+        
+        String expected = "{=END, --float--=2.5, B=false, null=null, TEST=true, num =1}";
+        
+        for (int i = 0; i < inputs.length; i++) {
+    		Object result = testJson(inputs[i]);
+    		Assert.assertEquals(expected, result.toString());
+
         }
 	}
 	
