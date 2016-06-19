@@ -9,3 +9,5 @@ b. Support Unicode to handle multi-languages.
 c. TokenReader should be extended to support byte stream instead of just String input.
 
 d. Can we do ORM here? Similar to Hibernate and convert json string to meaningful objects instead of just java Object.
+
+e. Make the code more beautiful and object oritented, like convert the big switch-case to rule-action models
